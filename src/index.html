@@ -11,10 +11,18 @@
 <body>
   <div class="wrapper">
     <main id="main">
-      <h1 test='test'>MyTelegraphClient</h1>
-      <h1>Test</h1>
-      <button>Print a post</button>
-      <button>Print all posts</button>
+      <h1>MyTelegraphClient</h1>
+      <h3>Get post with link</h3>
+      <form action="" name="fetchForm">
+        <input type="text" name="fetchBox" id="test">
+        <input type="button" name="button" value="Print post" onClick="fetchHandler()">
+      </form>
+      <h3>Find all articles of author</h3>
+      <form action="" name="googleSearch">
+        <input type="text" name="googleBox" id="test">
+        <input type="button" name="button" value="Search" onClick="authorSearchHandler()">
+      </form>
+      <button onClick="clearPage()">Clear</button>
       <div class="posts-container" id="posts-container"></div>
     </main>
     <div class="bookmark-menu">
