@@ -11,16 +11,16 @@
   <title>Document</title>
 </head>
 
-<body>
-  <div class="container">
+<body class="bg-dark text-light">
+  <div class="container" id="page-parent">
     <header class="d-flex align-items-center flex-column">
       <h1>MyTelegraphClient</h1>
       <h3>Get post with link</h3>
       <form action="" name="fetchForm">
-        <input type="text" name="fetchBox" id="test">
-        <input type="button" name="button" value="Print post" onClick="fetchHandler()">
+        <input type="text" name="fetchBox">
+        <input type="button" name="button" value="Print post" id="test">
       </form>
-      <h3>Find all articles of author</h3>
+      <h3>Search for articles</h3>
       <form action="" name="googleSearch">
         <input type="text" name="googleBox" id="test">
         <input type="button" name="button" value="Search" onClick="fakeGoogleAPIResponse(googleAPIResponse)">
@@ -28,8 +28,7 @@
       </form>
       <button onClick="clearPage()">Clear</button>
     </header>
-    <div class="row row-cols-1 row-cols-xxl-5 row-cols-xl-4 row-cols-md-3 row-cols-sm-2 justify-content-between"
-      id="parent">
+    <div class="row row-cols-1 row-cols-xxl-4 row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-1" id="parent">
 
     </div>
   </div>

@@ -5,19 +5,29 @@
           box-sizing: border-box;
 }
 
-.posts-container {
+.card-img-top {
+  width: 100%;
+  height: 150px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.col {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-}
-
-img {
-  height: 150px;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
 .card {
-  height: 500px;
+  height: 395px;
+  max-width: 290px;
+}
+
+.card-body {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /*# sourceMappingURL=style.css.map */

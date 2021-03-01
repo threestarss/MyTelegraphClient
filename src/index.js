@@ -1,6 +1,12 @@
-const mainSection = document.getElementById('parent');
-const favPagesArray = [];
-/*makePage принимает объект page(), обращается к свойству result и вытаскивает оттуда массив объектов content, он содержит DOM-структуру статьи.
+const mainSection = document.getElementById('parent');     // todo: поменять местами
+const pageSection = document.getElementById('page-parent');//
+const noimg = './placeholder.png';
+const fetchButton = document.getElementById('test');
+fetchButton.addEventListener('click', fetchHandler)
+mainSection.addEventListener(('click'), event => {
+  console.log(event);
+});
+/* makePage принимает объект page(), обращается к свойству result и вытаскивает оттуда массив объектов content, он содержит DOM-структуру статьи.
 Объекты в массиве content в документации называются Node, они содержат данные, используя которые можно собрать DOM элемент(https://telegra.ph/api#Node). Имеют следующий вид:
 {
   tag: string,
@@ -12,72 +18,71 @@ tag - название HTML-тега
 
 В документации API уже есть хорошая функция, которая может перевести массив Node'ов в DOM-структуру, и следует использовать её.
 Но, чтобы показать, что я могу реализовать нужную функцию самостоятельно, сделал тоже самое, но с reduce. Это не очень хорошее решение,
-оно привело к проблеме, решение которой я описал ниже в коде.*/
+оно привело к проблеме, решение которой я описал ниже в коде. */
 function makePage(page) {
   let content = page.result.content;
   content.forEach(elem => {
-    mainSection.append(makeDomObj(elem));
+    pageSection.append(makeDomObj(elem));
   })
-  function makeDomObj ({ tag, children = [], attrs }) {
-    return children.reduce((acc, curr) => {
-      if (attrs) {                                     // Проверяем, есть ли у Node атрибуты. Если да - сразу же их вставляем в 
-        for (let key in attrs) {                       // DOM-элемент
-          acc.setAttribute(key, attrs[key]);
-        }
-      }
-
-      if (typeof curr === 'string') {                  // Если элемент обычный текст, то просто помещаем его внутрь тега.
-        acc.innerHTML += curr;
-      } else {
-        if (curr.children) {                           // Если у DOM-элемента есть дети - делаем рекурсивный вызов makeDomObj.
-          acc.append(makeDomObj(curr));
-        } else {                                       // Та проблема, с которой я столкнулся:
-          let temp = document.createElement(curr.tag); // Если у DOM-элемента нет детей, то это одиночный тэг. В таком случае рекурсив-
-          for (let key in curr.attrs) {                // ный вызов просто несработает. Приходится создавать элемент вручную.
-            if (curr.attrs[key].startsWith("/")) {
-              temp.setAttribute(key, `https://telegra.ph${curr.attrs[key]}`); // Если картинка залита на сам телеграф, то API отдаёт
-            } else {                                                          // ссылку в виде /path.png, поэтому приходится 
-              temp.setAttribute(key, curr.attrs[key]);                        // дописывать url таким образом.
-            }
-          };
-          acc.append(temp);
-        };
-      }
-      return acc;
-    }, document.createElement(tag));
-  }
 }
 
-async function fetchHandler() {
+function makeDomObj ({ tag, children = [], attrs }) {
+  return children.reduce((acc, curr) => {
+    if (attrs) {                                     // Проверяем, есть ли у Node атрибуты. Если да - сразу же их вставляем в 
+      for (let key in attrs) {                       // DOM-элемент
+        acc.setAttribute(key, attrs[key]);
+      }
+    }
+
+    if (typeof curr === 'string') {                  // Если элемент обычный текст, то просто помещаем его внутрь тега.
+      acc.innerHTML += curr;
+    } else {
+      if (curr.children) {                           // Если у DOM-элемента есть дети - делаем рекурсивный вызов makeDomObj.
+        acc.append(makeDomObj(curr));
+      } else {                                       // Та проблема, с которой я столкнулся:
+        let temp = document.createElement(curr.tag); // Если у DOM-элемента нет детей, то это одиночный тэг. В таком случае рекурсив-
+        for (let key in curr.attrs) {                // ный вызов просто несработает. Приходится создавать элемент вручную.
+          if (curr.attrs[key].startsWith("/")) {
+            temp.setAttribute(key, `https://telegra.ph${curr.attrs[key]}`); // Если картинка залита на сам телеграф, то API отдаёт
+          } else {                                                          // ссылку в виде /path.png, поэтому приходится 
+            temp.setAttribute(key, curr.attrs[key]);                        // дописывать url таким образом.
+          }
+        };
+        acc.append(temp);
+      };
+    }
+    return acc;
+  }, document.createElement(tag));
+}
+
+// асинхронные функции для fetch'ей и последующего рендера ответов API
+async function fetchHandler(event) { // fetch для TelegraphAPI 
+  console.log(event)
   const fetchTargetPage = document.getElementsByName('fetchBox')[0].value;
   const response = await fetch(`https://api.telegra.ph/getPage/${fetchTargetPage.slice(19)}?return_content=true`);
   const newResponse = await response.json();
   console.log(newResponse);
-  makePage(newResponse);
+  makePage(newResponse);        // рендер статьи
 }
-async function searchHandler() {
+async function searchHandler() { // fetch для Google Custom Search API (далее GCS API)
   clearPage();
   const searchQuery = document.getElementsByName('googleBox')[0].value;
   const searchTest = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyBit3zVmXZThAxAnPT_j8qBnrQgRN_IrRg&cx=0d7cbe59cd07cfd30&q=${searchQuery}`);
   const response = await searchTest.json();
   console.log(response);
-  makeListOfPages(response);
+  makeListOfPages(response);   // рендер списка статей в виде карточек.
 }
-function clearPage() {
-  mainSection.innerHTML = '';
-}
-function descriptionMaker(page) {
-  mainSection.innerHTML = page.result.description;
-}
+
+// функции для рендера ответов API
 function makeListOfPages({ items }) {
   items.forEach(elem => {
     mainSection.append(makePageCard(elem));
   })
 }
-
 function makePageCard( {
   link,
   title = 'no title',
+  snippet,
   pagemap: {
     cse_thumbnail: [
       { src: imgThumbnail } = {}
@@ -85,32 +90,71 @@ function makePageCard( {
     cse_image: [
       { src: img } = {}
     ] = []
-  }
-} ) {
-  const card = document.createElement('div');
-  const cardTitle = document.createElement('h5');
-  const cardText = document.createElement('p');
-  const cardUrl = document.createElement('a');
-  const cardBody = document.createElement('div');
-  const cardCol = document.createElement('div');
-  cardCol.className = 'col'
+  }                                                    // Функция конструирует компонент Card Bootstrap:
+} ) {                                                  // https://getbootstrap.com/docs/5.0/components/card/
+  title = `${title.slice(0, title.length - 11)}`;
+  const cardCol = document.createElement('div');       // Создание контейнера для Card, чтобы Bootstrap сделал отступы между ними
+  cardCol.className = 'col mt-3'                       // 
+  const card = document.createElement('div');          // Создание элемента Card
+  card.className = 'card bg-secondary bg-gradient';
+  card.link = link;
+  const cardImgContainer = document.createElement('div');
+  cardImgContainer.className = 'img-container';
+  const cardImg = document.createElement('img');       // Создание превью статьи. GCS API не всегда возвращает превью, и даже картинку,
+  cardImg.src = imgThumbnail || img || noimg;          // <-- поэтому здесь использую short-circuit evaluation для проверки переменных
+  cardImg.className = "card-img-top";                  // Если картинки нет - подставляется заглушка noimg.
+  const cardBody = document.createElement('div');      // Создание контейнера 
   cardBody.className = 'card-body';
-  cardUrl.href = link;
-  cardUrl.innerHTML = link;
-  cardTitle.innerHTML = title;
-  card.className = 'card';
-  cardText.append(cardUrl);
-  const cardThumbnail = document.createElement('img');
-  cardThumbnail.src = imgThumbnail || img || 'no-img';
-  cardThumbnail.className = "card-img-top ";
+  const cardText = document.createElement('p');
+  cardText.className = 'card-text';
+  cardText.innerText = snippet;
+  const cardTitle = document.createElement('h5');
+  cardTitle.innerText = title;
+  cardImgContainer.append(cardImg);
   cardBody.append(cardTitle, cardText);
-  card.append(cardThumbnail, cardBody);
+  card.append(cardImgContainer, cardBody);
   cardCol.append(card);
   return cardCol;
 }
+
 function fakeGoogleAPIResponse(response) {
+  clearPage();
   makeListOfPages(response);
+  console.log(document.querySelectorAll('.card'))
 }
+
+function clearPage() {
+  mainSection.innerHTML = '';
+}
+function descriptionMaker(page) {
+  mainSection.innerHTML = page.result.description;
+}
+
+// Закладки
+function bookmarksFunctions() {
+  let bookmarksArray = [];
+
+  let functions = {
+    addPage,
+    deletePage,
+
+  }
+  return functions;
+
+  function addPage(page) {
+    bookmarksArray.push(page);
+    renderBookmarks();
+  }
+  function deletePage() {
+    renderBookmarks();
+  }
+  function renderBookmarks() {
+
+  }
+}
+
+
+
 const googleAPIResponse = {
   "kind": "customsearch#search",
   "url": {
