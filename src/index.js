@@ -1,12 +1,28 @@
-const mainSection = document.getElementById('parent');     // todo: поменять местами
-const pageSection = document.getElementById('page-parent');//
+const bookmarks = bookmarksFunctions();
+const bookmarkMenu = document.querySelector('.bookmark-menu');
+bookmarkMenu.addEventListener('click', event => {
+  if (!event.target.closest('.bookmark')) return;
+  fetchHandler(event);
+})
+const mainSection = document.querySelector('#parent');
+mainSection.addEventListener('click', event => {
+  if (!event.target.closest('.card') &&
+  !event.target.closest('header')) return; 
+  if (event.target instanceof HTMLButtonElement) {
+    bookmarks.btnEventHandler(event);
+  } else {
+    fetchHandler(event);
+  }
+})
 const noimg = './placeholder.png';
-const fetchButton = document.getElementById('test');
-fetchButton.addEventListener('click', fetchHandler)
-mainSection.addEventListener(('click'), event => {
-  console.log(event);
-});
-/* makePage принимает объект page(), обращается к свойству result и вытаскивает оттуда массив объектов content, он содержит DOM-структуру статьи.
+
+const fetchInput = document.querySelector('#fetchInput');
+fetchInput.addEventListener('submit', fetchHandler);
+
+const googleInput = document.querySelector('#googleInput');
+googleInput.addEventListener('submit', searchHandler);
+
+/* makePage принимает объект page, обращается к свойству result и вытаскивает оттуда массив объектов content, он содержит DOM-структуру статьи.
 Объекты в массиве content в документации называются Node, они содержат данные, используя которые можно собрать DOM элемент(https://telegra.ph/api#Node). Имеют следующий вид:
 {
   tag: string,
@@ -19,11 +35,37 @@ tag - название HTML-тега
 В документации API уже есть хорошая функция, которая может перевести массив Node'ов в DOM-структуру, и следует использовать её.
 Но, чтобы показать, что я могу реализовать нужную функцию самостоятельно, сделал тоже самое, но с reduce. Это не очень хорошее решение,
 оно привело к проблеме, решение которой я описал ниже в коде. */
-function makePage(page) {
-  let content = page.result.content;
+function makePage({
+  result: {
+    author_name: author,
+    description: snippet,
+    url: link,
+    image_url: img,
+    content,
+    title
+  }
+}) {
+  const article = document.createElement('article');
+  article.append(makeArticleHeader(author, title, img, link, snippet));
   content.forEach(elem => {
-    pageSection.append(makeDomObj(elem));
-  })
+    article.append(makeDomObj(elem));
+  });
+  mainSection.append(article)
+}
+
+function makeArticleHeader(author, title, img, link, snippet) {
+  const header = document.createElement('header');
+  header.dataset.img = img;
+  header.dataset.link = link;
+  header.dataset.title = title;
+  header.dataset.snippet = snippet;
+  const h3 = document.createElement('h3');
+  h3.textContent = title;
+  const p = document.createElement('p');
+  p.textContent = author;
+  const btn = bookmarks.makeBookmarkBtn()
+  header.append(h3, p, btn);
+  return header;
 }
 
 function makeDomObj ({ tag, children = [], attrs }) {
@@ -35,7 +77,7 @@ function makeDomObj ({ tag, children = [], attrs }) {
     }
 
     if (typeof curr === 'string') {                  // Если элемент обычный текст, то просто помещаем его внутрь тега.
-      acc.innerHTML += curr;
+      acc.textContent = curr;
     } else {
       if (curr.children) {                           // Если у DOM-элемента есть дети - делаем рекурсивный вызов makeDomObj.
         acc.append(makeDomObj(curr));
@@ -56,28 +98,74 @@ function makeDomObj ({ tag, children = [], attrs }) {
 }
 
 // асинхронные функции для fetch'ей и последующего рендера ответов API
-async function fetchHandler(event) { // fetch для TelegraphAPI 
-  console.log(event)
-  const fetchTargetPage = document.getElementsByName('fetchBox')[0].value;
+async function fetchHandler(event) {  // fetch для TelegraphAPI 
+  event.preventDefault();
+  let fetchTargetPage;
+  if (event.target instanceof HTMLFormElement) {
+    fetchTargetPage = document.querySelector('#fetchValue').value;
+  } else if (event.target.closest('.card')) {
+    fetchTargetPage = event.target.closest('.card').dataset.link;
+  } else {
+    fetchTargetPage = event.target.closest('.bookmark').dataset.link;
+  }
+
+  if(!mainSection.classList.contains('article-container')) {
+    mainSection.className = 'article-container';
+  }
+  clearPage();
+  try {
   const response = await fetch(`https://api.telegra.ph/getPage/${fetchTargetPage.slice(19)}?return_content=true`);
+  console.log(response);
   const newResponse = await response.json();
   console.log(newResponse);
-  makePage(newResponse);        // рендер статьи
+  makePage(newResponse);          // рендер статьи
+  } catch (err) {
+    console.error(err)
+  }
 }
-async function searchHandler() { // fetch для Google Custom Search API (далее GCS API)
-  clearPage();
-  const searchQuery = document.getElementsByName('googleBox')[0].value;
-  const searchTest = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyBit3zVmXZThAxAnPT_j8qBnrQgRN_IrRg&cx=0d7cbe59cd07cfd30&q=${searchQuery}`);
-  const response = await searchTest.json();
-  console.log(response);
-  makeListOfPages(response);   // рендер списка статей в виде карточек.
+
+async function searchHandler(event) { // fetch для Google Custom Search API
+  const searchQuery = document.querySelector('#googleValue').value;
+  let start = 1;
+  let btn;
+  event.preventDefault();
+  try {
+    const searchResult = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyBit3zVmXZThAxAnPT_j8qBnrQgRN_IrRg&cx=0d7cbe59cd07cfd30&q=${searchQuery}&start=${start}`);
+    const response = await searchResult.json();
+
+    if(!response.items) {
+      throw new Error('Google Search API Error: no such results');
+    }
+    if(!mainSection.classList.contains('row')){
+      mainSection.className = 'row row-cols-1 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-3 row-cols-md-2 row-cols-sm-1';
+    }
+
+    clearPage();
+    makeListOfPages(response);   // рендер результатов в виде карточек.
+    btn = makeLoadmoreBtn();     // создание кнопки Load More Results
+    btn.addEventListener('click', loadMoreResults);
+    start += 10;
+  } catch(err) {
+    console.error(err);
+  }
+
+  async function loadMoreResults(event) {
+    try {
+      const searchResult = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyBit3zVmXZThAxAnPT_j8qBnrQgRN_IrRg&cx=0d7cbe59cd07cfd30&q=${searchQuery}&start=${start}`);
+      const response = await searchResult.json();
+      makeListOfPages(response);               // рендер списка статей в виде карточек.
+      start += 10;
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
 // функции для рендера ответов API
 function makeListOfPages({ items }) {
   items.forEach(elem => {
     mainSection.append(makePageCard(elem));
-  })
+  });
 }
 function makePageCard( {
   link,
@@ -94,66 +182,173 @@ function makePageCard( {
 } ) {                                                  // https://getbootstrap.com/docs/5.0/components/card/
   title = `${title.slice(0, title.length - 11)}`;
   const cardCol = document.createElement('div');       // Создание контейнера для Card, чтобы Bootstrap сделал отступы между ними
-  cardCol.className = 'col mt-3'                       // 
+  cardCol.className = 'col mt-2 mb-3'                       // 
+  
   const card = document.createElement('div');          // Создание элемента Card
-  card.className = 'card bg-secondary bg-gradient';
-  card.link = link;
+  card.className = 'card';
+  card.dataset.link = link;
+  card.dataset.title = title;
+  card.dataset.snippet = snippet;
+  card.dataset.img = imgThumbnail || img || noimg;
+  
   const cardImgContainer = document.createElement('div');
   cardImgContainer.className = 'img-container';
+  
   const cardImg = document.createElement('img');       // Создание превью статьи. GCS API не всегда возвращает превью, и даже картинку,
   cardImg.src = imgThumbnail || img || noimg;          // <-- поэтому здесь использую short-circuit evaluation для проверки переменных
   cardImg.className = "card-img-top";                  // Если картинки нет - подставляется заглушка noimg.
-  const cardBody = document.createElement('div');      // Создание контейнера 
+  
+  const cardBody = document.createElement('div');      // Создание контейнера для заголовка и текста
   cardBody.className = 'card-body';
+  
   const cardText = document.createElement('p');
   cardText.className = 'card-text';
-  cardText.innerText = snippet;
+  cardText.textContent = snippet;
+  
   const cardTitle = document.createElement('h5');
-  cardTitle.innerText = title;
+  cardTitle.textContent = title;
+  
+  const cardBookmarkBtn = bookmarks.makeBookmarkBtn();
+
   cardImgContainer.append(cardImg);
   cardBody.append(cardTitle, cardText);
-  card.append(cardImgContainer, cardBody);
+  card.append(cardBookmarkBtn ,cardImgContainer, cardBody);
   cardCol.append(card);
+  
   return cardCol;
 }
 
 function fakeGoogleAPIResponse(response) {
   clearPage();
   makeListOfPages(response);
-  console.log(document.querySelectorAll('.card'))
+  makeLoadmoreBtn();
+}
+
+function makeLoadmoreBtn() {
+  let btn = document.createElement('button');
+  btn.setAttribute('id', 'loadmore');
+  btn.textContent = 'Load more results';
+  let main = document.querySelector('main');
+  main.append(btn)
+  return btn;
 }
 
 function clearPage() {
+  start = 1;
+  let btn = document.querySelector('#loadmore');
+  if (btn) {
+    btn.remove()
+  }
   mainSection.innerHTML = '';
-}
-function descriptionMaker(page) {
-  mainSection.innerHTML = page.result.description;
 }
 
 // Закладки
 function bookmarksFunctions() {
   let bookmarksArray = [];
-
   let functions = {
     addPage,
     deletePage,
-
+    logArray,
+    clearBookmarks,
+    makeBookmarkBtn,
+    btnEventHandler
   }
   return functions;
 
-  function addPage(page) {
-    bookmarksArray.push(page);
-    renderBookmarks();
+  /* публичные функции */
+  function addPage(img, link, title, snippet) {
+    bookmarksArray.push({
+      img: img,
+      link: link,
+      title: title,
+      snippet: snippet
+    });
+    renderBookmarkList();
   }
-  function deletePage() {
-    renderBookmarks();
+  function deletePage(link) {
+    bookmarksArray = bookmarksArray.filter(elem => !(elem.link === link));
+    renderBookmarkList();
   }
-  function renderBookmarks() {
+  function logArray() {                 //метод для дебага
+    bookmarksArray.forEach(elem => {
+      console.log(elem)
+    })
+  }
+  function clearBookmarks() {
+    bookmarksArray = [];
+    renderBookmarkList();
+  }
+  function makeBookmarkBtn() {
+    const btn = document.createElement('button');
+    btn.className = 'bookmark-btn';
+    return btn;
+  }
 
+  function btnEventHandler({ 
+    target: {
+      classList,
+      parentElement: {
+        dataset: {
+          img,
+          link,
+          title,
+          snippet
+        }
+      }
+    } 
+  }) {
+    if (!duplicateCheck(link)) {
+      classList.toggle('marked');
+      addPage(img, link, title, snippet);
+      return;
+    }
+    if (classList.contains('marked')) {
+      classList.toggle('marked');
+      deletePage(link);
+    }
   }
+  /* конец публичных функций */
+
+  /* служебные/приватные функции */
+  function duplicateCheck(link) {
+    return bookmarksArray.some(elem => {
+      return elem.link === link;
+    });
+  }
+
+  function renderBookmarkList() {
+    bookmarkMenu.innerHTML = '';
+    bookmarksArray.forEach(elem => {
+      renderBookmark(elem);
+    })
+  }
+
+  function renderBookmark({img, link, title, snippet}) {
+    const bookmarkContainer = document.createElement('div');
+    bookmarkContainer.className = 'row bookmark g-0';
+    bookmarkContainer.dataset.link = link;
+
+    const bookmarkImgBox = document.createElement('div');
+    bookmarkImgBox.className = 'col-4'
+
+    const bookmarkImg = document.createElement('img');
+    bookmarkImg.src = img;
+
+    const bookmarkTextBox = document.createElement('div');
+    bookmarkTextBox.className = 'col-8 ps-2 pe-2 mt-2';
+
+    const bookmarkTitle = document.createElement('h5');
+    const bookmarkText = document.createElement('p');
+    bookmarkTitle.textContent = title;
+    bookmarkText.textContent = snippet;
+  
+    bookmarkImgBox.append(bookmarkImg)
+    bookmarkTextBox.append(bookmarkTitle, bookmarkText);
+    bookmarkContainer.append(bookmarkImgBox, bookmarkTextBox);
+    bookmarkMenu.append(bookmarkContainer);
+  }
+  /* конец служебных/приватных функций */
 }
-
-
 
 const googleAPIResponse = {
   "kind": "customsearch#search",

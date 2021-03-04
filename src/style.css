@@ -5,11 +5,113 @@
           box-sizing: border-box;
 }
 
-.card-img-top {
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #6c757d;
+  border-radius: 20px;
+  border: 3px solid #212529;
+}
+
+article {
+  max-width: 732px;
   width: 100%;
-  height: 150px;
-  -o-object-fit: cover;
-     object-fit: cover;
+  background-color: #333;
+}
+
+article figure {
+  margin: 0 21px 12px;
+}
+
+article p {
+  margin: 0 21px 12px;
+}
+
+article h3 {
+  margin: 0 21px 12px;
+}
+
+article pre {
+  margin: 0 21px 12px;
+  background-color: #222;
+}
+
+article blockquote {
+  margin: 0 21px 12px;
+  font-style: italic;
+  word-wrap: break-word;
+  border-left: 3px solid #fff;
+  padding-left: 15px;
+}
+
+article aside {
+  margin: 0 21px 12px;
+}
+
+article img {
+  max-width: 732px;
+  width: 100%;
+  height: auto;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+header.container-fluid {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  height: 6vh;
+}
+
+header .bookmark-btn {
+  position: relative;
+  top: -50px;
+  right: -690px;
+  width: 20px;
+  height: 20px;
+  background: url(./icons8-bookmark.svg) no-repeat top left;
+  background-size: contain;
+  background-color: #fff;
+  border: none;
+}
+
+main {
+  overflow-y: auto;
+  height: 94vh;
+}
+
+.hidden {
+  display: none;
+}
+
+.article-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.card .bookmark-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background: url(./icons8-bookmark.svg) no-repeat top left;
+  background-size: contain;
+  background-color: #fff;
+  border: none;
+}
+
+.marked {
+  background-color: #dc143c;
 }
 
 .col {
@@ -24,10 +126,78 @@
 .card {
   height: 395px;
   max-width: 290px;
+  background-color: #333;
+}
+
+.card:hover {
+  cursor: pointer;
 }
 
 .card-body {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 150px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+#loadmore {
+  margin-top: 25px;
+  position: relative;
+  left: 44%;
+  bottom: 20px;
+}
+
+@media (min-width: 1200px) {
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .bookmark-menu {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 6vh;
+    overflow-y: scroll;
+    height: 94vh;
+    border-left: 1px dashed #ccc;
+  }
+  .bookmark {
+    width: 100%;
+    height: 16.66667vh;
+    border: 1px dashed #ccc;
+    overflow: hidden;
+  }
+  .bookmark div.col-4 {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    height: 16.66667vh;
+  }
+  .bookmark div.col-4 img {
+    max-height: 16.26667vh;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .bookmark div.col-8 p {
+    line-height: 1.8;
+  }
+  .bookmark:hover {
+    cursor: pointer;
+  }
+  .border-left {
+    border-left: 1px dashed #ccc;
+  }
 }
 /*# sourceMappingURL=style.css.map */
