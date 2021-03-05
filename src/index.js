@@ -106,14 +106,15 @@ function renderArticleContent ({ tag, children = [], attrs }) { //рекурси
 /* асинхронные функции */
 async function fetchHandler(event) {  // fetch Telegra.ph API, по итогу рендерит статью
   event.preventDefault();
-  let fetchTargetPage;
+
+  let fetchTargetPage;  // источник ссылки на статью зависит от вида кликнутого элемента
   if (event.target instanceof HTMLFormElement) {
     fetchTargetPage = document.querySelector('#fetchValue').value.toLowerCase();
   } else if (event.target.closest('.card')) {
     fetchTargetPage = event.target.closest('.card').dataset.link.toLowerCase();
   } else {
     fetchTargetPage = event.target.closest('.bookmark').dataset.link.toLowerCase();
-  } // источник ссылки на статью зависит от вида кликнутого элемента
+  }
 
   const spinner = renderSpinner();
   main.append(spinner);
@@ -145,7 +146,7 @@ async function searchHandler(event) { // fetch Google Custom Search API
   try {
     const searchResult = await fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyBit3zVmXZThAxAnPT_j8qBnrQgRN_IrRg&cx=0d7cbe59cd07cfd30&q=${searchQuery}&start=${start}`);
     const response = await searchResult.json();
-
+    console.log(response);
     if(!response.items) {   // если в ответе отсутствует массив items - ничего не найдено
       throw new Error('Google Search API Error');
     }
@@ -358,16 +359,16 @@ function bookmarksFunctions() {
     bookmarkImg.src = img;
 
     const bookmarkTextBox = document.createElement('div');
-    bookmarkTextBox.className = 'col-8 ps-2 pe-2 mt-2';
+    bookmarkTextBox.className = 'bookmark-text col-8';
 
     const bookmarkTitle = document.createElement('h5');
     const bookmarkText = document.createElement('p');
     bookmarkTitle.textContent = title;
     bookmarkText.textContent = snippet;
   
-    bookmarkImgBox.append(bookmarkImg)
-    bookmarkTextBox.append(bookmarkTitle, bookmarkText);
-    bookmarkContainer.append(bookmarkBtn, bookmarkImgBox, bookmarkTextBox);
+    bookmarkImgBox.append(bookmarkImg);
+    bookmarkTextBox.append(bookmarkBtn, bookmarkTitle, bookmarkText);
+    bookmarkContainer.append(bookmarkImgBox, bookmarkTextBox);
     bookmarkMenu.append(bookmarkContainer);
   }
   /* конец служебных/приватных функций */
