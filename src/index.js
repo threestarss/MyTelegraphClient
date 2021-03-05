@@ -82,8 +82,8 @@ function renderArticleContent ({ tag, children = [], attrs }) { //рекурси
       }
     }
 
-    if (typeof curr === 'string') {                 
-      acc.textContent = curr;
+    if (typeof curr === 'string') {
+      acc.append(document.createTextNode(curr));
     } else {
       if (curr.children) {
         acc.append(renderArticleContent(curr));
