@@ -1,0 +1,248 @@
+*
+  margin: 0
+  padding: 0
+  box-sizing: border-box
+
+*::-webkit-scrollbar
+  width: 10px
+
+*::-webkit-scrollbar-thumb
+  background-color: #6c757d
+  border-radius: 20px
+  border: 3px solid #212529
+
+article
+  display: flex
+  flex-direction: column
+  margin-top: 25px
+  max-width: 732px
+  width: 100%
+  background-color: #333
+  figure
+    margin: 0 21px 12px
+  p
+    margin: 0 21px 12px
+  h3
+    max-width: 700px
+    margin: 0 21px 12px
+  pre
+    margin: 0 21px 12px
+    background-color: #222
+  blockquote
+    margin: 0 21px 12px
+    font-style: italic
+    word-wrap: break-word
+    border-left: 3px solid #fff
+    padding-left: 15px
+  aside
+    margin: 0 21px 12px
+  img
+    max-width: 732px
+    width: 100%
+    height: auto
+  &:last-child
+    padding-bottom: 30px
+
+body
+  margin: 0 auto
+  max-width: 1920px
+  overflow-x: hidden
+  overflow-y: hidden
+
+h5
+  line-height: 1.4
+
+header.container-fluid
+  height: 115px
+
+main
+  overflow-y: auto
+  height: 94vh
+
+.article-header
+  .bookmark-btn
+    position: relative
+    top: 10px
+    right: -700px
+    background-color: transparent
+    color: #f8f9fa
+    border: none
+    &.marked
+      color: #dc143c
+
+.article-container
+  display: flex
+  justify-content: center
+  width: 100%
+
+.bookmark-header
+  display: none
+
+.bookmark-menu
+  display: none
+  .bookmark-btn
+    position: absolute
+    top: 10px
+    right: -155px
+    background-color: transparent
+    color: #f8f9fa
+    border: none
+    &.marked
+      color: #dc143c
+
+.card
+  .bookmark-btn
+    position: absolute
+    top: 5px
+    right: 5px
+    background-color: transparent
+    color: #ddd
+    border: none
+    &.marked
+      color: #dc143c
+
+.col
+  display: flex
+  justify-content: center
+
+.card
+  height: 395px
+  max-width: 290px
+  background-color: #333
+  &:hover
+    cursor: pointer
+
+.card-body
+  overflow: hidden
+  text-overflow: ellipsis
+
+.card-img-top
+  width: 100%
+  height: 150px
+  object-fit: cover
+
+.input
+  width: 100%
+  height: 30px
+  margin-top: 5px
+  padding-left: 10px
+  padding-right: 10px
+  color: #f8f9fa
+  border-radius: 5px
+  .input
+    background-color: #333
+    border-style: solid
+  &::placeholder
+    color: #f8f9fa
+  &:focus
+    &::placeholder
+      color: transparent
+
+.header-menu
+  display: flex
+  flex-direction: column
+  align-items: center
+
+.hidden
+  display: none
+
+.logo
+  display: block
+  cursor: pointer
+  margin-bottom: 0
+
+.row
+  .header-menu
+    --bs-gutter-x: 1.5rem
+
+.spinner-grow
+  position: absolute
+  top: 50%
+  right: 45%
+  &::before
+    background-color: black
+    opacity: 0.5
+    width: 100%
+    height: 100%
+
+#loadmore
+  margin-top: 25px
+  position: relative
+  left: 44%
+  bottom: 20px
+
+@media (min-width: 1200px)
+  h1
+    font-size: 2rem
+
+@media (min-width: 1023px)
+  $bookmarkheight: 100vh / 6
+
+  header.container-fluid
+    position: sticky
+    top: 0
+    z-index: 11
+    height: 7vh
+    // margin: 0 16px
+
+  .bookmark
+    width: 100%
+    height: $bookmarkheight
+    border: 1px dashed #ccc
+    overflow: hidden
+    div.col-4
+      display: flex
+      align-items: center
+      height: $bookmarkheight
+      img
+        max-height: $bookmarkheight - 0.4vh
+        max-width: 100%
+        width: auto
+        height: auto
+        margin-left: auto
+        margin-right: auto
+    div.col-8
+      p
+        line-height: 1.6
+    &:hover
+      cursor: pointer
+      background-color: #333
+
+  .bookmark-menu
+    display: block
+    background-color: #222
+    padding-left: 0
+    padding-right: 0
+    position: sticky
+    top: 7vh
+    overflow-y: scroll
+    height: 93vh
+    border-left: 1px dashed #ccc
+
+  .bookmark-header
+    display: flex
+    background-color: #222
+
+  .border-left
+    border-left: 1px dashed #ccc
+
+  .header-menu
+    flex-direction: row
+    align-items: center
+    padding-right: 0
+
+  .input
+    height: 40px
+    margin-top: 0
+    .input
+      margin-top: 5px
+
+  .testt
+    height: 100%
+
+  .spinner-grow
+    left: 37%
+
+  main
+    padding-left: 24px
+    padding-right: 0px
