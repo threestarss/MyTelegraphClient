@@ -34,15 +34,15 @@ googleInput.addEventListener('submit', searchHandler);
 
 // Обработка ответа Telegra.ph API. Структура ответа - в console.log
 function renderArticle({
-  result: {
-    author_name: author,
-    description: snippet,
-    url: link,
-    image_url: img,
-    content,
-    title
-  }
-}) {
+    result: {
+      author_name: author,
+      description: snippet,
+      url: link,
+      image_url: img,
+      content,
+      title
+    }
+  }) {
   const article = document.createElement('article');
   article.append(renderArticleHeader(author, title, img, link, snippet));
   content.forEach(elem => {
@@ -184,20 +184,20 @@ function renderCardList({ items }) {
   });
 }
 
-function renderCard( {
+function renderCard({
   link,
   title = 'no title',
   snippet,
   pagemap: {
-    cse_thumbnail: [
-      { src: imgThumbnail } = {}
-    ] = [],
-    cse_image: [
-      { src: img } = {}
-    ] = []
+    cse_thumbnail: [{ 
+      src: imgThumbnail
+    } = {}] = [],
+    cse_image: [{ 
+      src: img
+    } = {}] = []
   }
-} ) {
-  title = `${title.slice(0, title.length - 11)}`;
+}) {
+  title = `${title.slice(0, title.length - 11)}`; // Отсекает "– Telegraph" в конце каждого заголовка
   const cardCol = document.createElement('div');
   cardCol.className = 'col mt-2 mb-3';
   
