@@ -8,7 +8,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <link rel="stylesheet" href="./style.css">
-  <title>Document</title>
+  <link rel="shortcut icon" type="image/x-icon" href="icon.png" />
+  <title>threestarss' Telegra.ph client</title>
 </head>
 
 <body class="bg-dark text-light">
@@ -17,21 +18,29 @@
       <div class="header-menu col justify-content-between">
         <h1 class="logo">✨</h1>
         <form class="input" action="" id="googleInput">
-          <input class="input" type="text" placeholder="Telegra.ph search" id="googleValue" onclick="this.select()">
+          <input class="input" type="text" placeholder="Telegra.ph Search..." id="googleValue" onclick="this.select()">
         </form>
         <form class="input" action="" id="fetchInput">
-          <input class="input" type="text" placeholder="URL of article" id="fetchValue" onclick="this.select()">
+          <input class="input" type="text" placeholder="URL of article..." id="fetchValue" onclick="this.select()">
         </form>
       </div>
       <div class="bookmark-header border-left col-3 ps-2">
-        <h1>Bookmarks</h1>
+        <h2>Bookmarks</h2>
       </div>
     </div>
   </header>
   <div class="container-fluid main-container g-0">
     <div class="row">
       <main class="col-9">
-        <div class="" id="parent">
+        <div class="welcome-msg" id="parent">
+          <h2>Welcome to threestarss' Telegra.ph Client!</h2>
+          <p>Use the <b>left</b> input to search for articles on Telegra.ph (via Google Custom Search API), and the
+            <b>right</b> input
+            to fetch articles with direct link (e.g. https://telegra.ph/Sample-Page-12-15) straight from Telegra.ph (via
+            Telegra.ph API)
+          </p>
+          <p>Be careful when using Search! Telegra.ph is full of articles that contain malicious links! And
+            unfortunately, I can't filter them out of SERP yet...</p>
         </div>
       </main>
       <aside class="bookmark-menu col-3">

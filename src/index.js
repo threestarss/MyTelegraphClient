@@ -84,20 +84,19 @@ function renderArticleContent ({ tag, children = [], attrs }) { //рекурси
 
     if (typeof curr === 'string') {
       acc.append(document.createTextNode(curr));
+    }
+    if (curr.children) {
+      acc.append(renderArticleContent(curr));
     } else {
-      if (curr.children) {
-        acc.append(renderArticleContent(curr));
-      } else {
-        let temp = document.createElement(curr.tag);
-        for (let key in curr.attrs) {
-          if (curr.attrs[key].startsWith("/")) {
-            temp.setAttribute(key, `https://telegra.ph${curr.attrs[key]}`);
-          } else {
-            temp.setAttribute(key, curr.attrs[key]);
-          }
-        };
-        acc.append(temp);
+      let temp = document.createElement(curr.tag);
+      for (let key in curr.attrs) {
+        if (curr.attrs[key].startsWith("/")) {
+          temp.setAttribute(key, `https://telegra.ph${curr.attrs[key]}`);
+        } else {
+          temp.setAttribute(key, curr.attrs[key]);
+        }
       };
+      acc.append(temp);
     }
     return acc;
   }, document.createElement(tag));
@@ -322,6 +321,7 @@ function bookmarksFunctions() {
     } 
   }) {
     if (classList.contains('marked')) {
+      console.log(link)
       classList.toggle('marked');
       deleteBookmark(link);
     } else if (!duplicateCheck(link)) {
@@ -360,6 +360,7 @@ function bookmarksFunctions() {
 
     const bookmarkTextBox = document.createElement('div');
     bookmarkTextBox.className = 'bookmark-text col-8';
+    bookmarkTextBox.dataset.link = link;
 
     const bookmarkTitle = document.createElement('h5');
     const bookmarkText = document.createElement('p');
@@ -374,6 +375,10 @@ function bookmarksFunctions() {
   /* конец служебных/приватных функций */
 }
 
-if (document.documentElement.clientWidth < 1024) {
-  main.className = 'col-12';
-} // костыль напоследок, меняю класс контейнеру контента в зависимости от ширины экрана, чтобы на мобилках выглядело хорошо.
+window.addEventListener('resize', function(event){
+  if (window.innerWidth < 1024) {
+    main.className = 'col-12';
+  } else {
+    main.className = 'col-9';
+  }
+});
