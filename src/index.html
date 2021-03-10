@@ -7,31 +7,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-  <link rel="stylesheet" href="./style.css">
   <link rel="shortcut icon" type="image/x-icon" href="icon.png" />
+  <link rel="stylesheet" href="style.css">
   <title>threestarss' Telegra.ph client</title>
 </head>
 
-<body class="bg-dark text-light">
-  <header class="bg-dark container-fluid align-items-center pe-0 g-0">
-    <div class="row row-height">
-      <div class="header-menu col justify-content-between">
-        <h1 class="logo">✨</h1>
-        <form class="input" action="" id="googleInput">
-          <input class="input" type="text" placeholder="Telegra.ph Search..." id="googleValue" onclick="this.select()">
-        </form>
-        <form class="input" action="" id="fetchInput">
-          <input class="input" type="text" placeholder="URL of article..." id="fetchValue" onclick="this.select()">
-        </form>
+<body class="bg-dark text-light row">
+  <div class="fuckkk col-9">
+    <header class="bg-dark container-fluid align-items-center pe-0 g-0">
+      <div class="row row-height">
+        <div class="header-menu col justify-content-between">
+          <h1 class="logo">✨</h1>
+          <form class="input" action="" id="googleInput">
+            <input class="input" type="text" placeholder="Telegra.ph Search..." id="googleValue"
+              onclick="this.select()">
+          </form>
+          <form class="input" action="" id="fetchInput">
+            <input class="input" type="text" placeholder="URL of article..." id="fetchValue" onclick="this.select()">
+          </form>
+        </div>
       </div>
-      <div class="bookmark-header border-left col-3 ps-2">
-        <h2>Bookmarks</h2>
-      </div>
-    </div>
-  </header>
-  <div class="container-fluid main-container g-0">
-    <div class="row">
-      <main class="col-9">
+    </header>
+    <div class="container-fluid main-container g-0">
+      <main>
         <div class="welcome-msg" id="parent">
           <h2>Welcome to threestarss' Telegra.ph Client!</h2>
           <p>Use the <b>left</b> input to search for articles on Telegra.ph (via Google Custom Search API), and the
@@ -43,10 +41,15 @@
             unfortunately, I can't filter them out of SERP yet...</p>
         </div>
       </main>
-      <aside class="bookmark-menu col-3">
-
-      </aside>
     </div>
+  </div>
+  <div class="bookmark-container col-3">
+    <div class="bookmark-header border-left ps-2">
+      <h2>Bookmarks</h2>
+    </div>
+    <aside class="bookmark-menu">
+
+    </aside>
   </div>
   <script src="https://kit.fontawesome.com/5235644540.js" crossorigin="anonymous"></script>
   <script src="./index.js"></script>

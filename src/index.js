@@ -375,10 +375,10 @@ function bookmarksFunctions() {
   /* конец служебных/приватных функций */
 }
 
-window.addEventListener('resize', function(event){
-  if (window.innerWidth < 1024) {
-    main.className = 'col-12';
-  } else {
-    main.className = 'col-9';
-  }
-});
+// window.addEventListener('resize', function(event){
+//   if (window.innerWidth < 1024) {
+//     main.className = 'col-12';
+//   } else {
+//     main.className = 'col-9';
+//   }
+// });
